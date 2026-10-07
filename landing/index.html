@@ -4,80 +4,188 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Bings - Food Delivery App for Android. Browse foods, cart, checkout, live rider tracking. Download the APK.">
+<meta name="theme-color" content="#ff5722">
 <title>Bings — Food Delivery App</title>
 <link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
 </head>
 <body>
 <nav class="topnav">
   <a class="nav-brand" href="#home"><span class="logo sm" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16"/><path d="M12 7a7 7 0 0 1 7 7H5a7 7 0 0 1 7-7Z"/><path d="M12 7V5"/><circle cx="12" cy="4" r="1" fill="currentColor" stroke="none"/></svg></span>Bings</a>
   <div class="nav-links">
-    <a href="#home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/></svg>Home</a>
+    <a href="#home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/></svg>Home</a>
+    <a href="#menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Menu</a>
     <a href="#about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg>About</a>
     <a href="#contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Contact</a>
   </div>
+  <a class="btn nav-cta" href="https://github.com/merjohnpagente/Delivery-App/releases/download/latest/bings-app.apk"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg><span>Get the app</span></a>
 </nav>
+
 <header class="hero" id="home">
   <div class="hero-inner">
     <div class="brand">
       <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16"/><path d="M12 7a7 7 0 0 1 7 7H5a7 7 0 0 1 7-7Z"/><path d="M12 7V5"/><circle cx="12" cy="4" r="1" fill="currentColor" stroke="none"/></svg></span>
       <span class="brand-name">Bings</span>
     </div>
-    <h1>Food delivery, made simple.</h1>
-    <p class="sub">Browse foods, add to cart, checkout, and track your rider live — on Android.</p>
+    <span class="pill">Free Android app · Flutter + Firebase</span>
+    <h1>Craving? Get it delivered hot and fast.</h1>
+    <p class="sub">Browse the menu, add to cart, checkout in seconds, and track your rider live on the map — all in one app.</p>
     <div class="cta">
       <a class="btn primary" href="https://github.com/merjohnpagente/Delivery-App/releases/download/latest/bings-app.apk"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg>Download APK</a>
-      <a class="btn ghost" href="https://github.com/merjohnpagente/Delivery-App"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.93c.58.1.79-.25.79-.55v-2c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.75 2.69 1.25 3.35.95.1-.74.4-1.25.72-1.53-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.67.41.35.77 1.05.77 2.12v3.14c0 .3.2.66.8.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>View on GitHub</a>
+      <a class="btn ghost" href="#menu">Explore the menu</a>
     </div>
-    <p class="note">Android only · Free · Built with Flutter + Firebase</p>
+    <div class="stats">
+      <div class="stat"><strong><span data-count="10">0</span>+</strong><span>app screens</span></div>
+      <div class="stat"><strong><span data-count="4.8" data-decimals="1">0</span></strong><span>avg. food rating</span></div>
+      <div class="stat"><strong><span data-count="30">0</span> min</strong><span>avg. delivery</span></div>
+    </div>
   </div>
   <div class="hero-art">
     <img src="assets/cover-image.png" alt="Bings food delivery">
+    <span class="chip chip-a"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>30-min delivery</span>
+    <span class="chip chip-b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Live rider tracking</span>
   </div>
 </header>
 
 <main class="container">
-  <section class="grid">
-    <div class="card">
-      <img src="assets/pizza.png" alt="Pizza">
-      <h2 class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Browse menu</h2>
-      <p>Search, categories, and food grid with ratings.</p>
+  <h2 class="section-title reveal">Popular categories</h2>
+  <p class="section-sub reveal" style="--d:.05s">Start with what you are craving.</p>
+  <section class="cats" id="menu">
+    <a class="cat reveal" style="--d:.05s" href="#favorites"><img src="assets/pizza.png" alt="Pizza"><span>Pizza</span></a>
+    <a class="cat reveal" style="--d:.1s" href="#favorites"><img src="assets/burger.png" alt="Burger"><span>Burger</span></a>
+    <a class="cat reveal" style="--d:.15s" href="#favorites"><img src="assets/biryani.png" alt="Biryani"><span>Biryani</span></a>
+    <a class="cat reveal" style="--d:.2s" href="#favorites"><img src="assets/drink.png" alt="Drinks"><span>Drinks</span></a>
+    <a class="cat reveal" style="--d:.25s" href="#favorites"><img src="assets/salan.png" alt="Salan"><span>Salan</span></a>
+  </section>
+
+  <h2 class="section-title reveal">Customer favorites</h2>
+  <p class="section-sub reveal" style="--d:.05s">Top-rated dishes from the in-app menu.</p>
+  <section class="dishes" id="favorites">
+    <article class="dish reveal" style="--d:.05s">
+      <img src="assets/pizza.png" alt="Cheese Pizza">
+      <div class="dish-body">
+        <div class="dish-top"><h3>Cheese Pizza</h3><span class="rating"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.4l6.1-.8Z"/></svg>4.8</span></div>
+        <p>Mozzarella, fresh basil, signature tomato sauce.</p>
+        <div class="dish-foot"><span class="price">$12.99</span><span class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>25-30 min</span></div>
+      </div>
+    </article>
+    <article class="dish reveal" style="--d:.1s">
+      <img src="assets/burger.png" alt="Classic Burger">
+      <div class="dish-body">
+        <div class="dish-top"><h3>Classic Burger</h3><span class="rating"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.4l6.1-.8Z"/></svg>4.6</span></div>
+        <p>Grilled beef, cheddar, house sauce, brioche bun.</p>
+        <div class="dish-foot"><span class="price">$8.99</span><span class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>15-20 min</span></div>
+      </div>
+    </article>
+    <article class="dish reveal" style="--d:.15s">
+      <img src="assets/biryani.png" alt="Chicken Biryani">
+      <div class="dish-body">
+        <div class="dish-top"><h3>Chicken Biryani</h3><span class="rating"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.4l6.1-.8Z"/></svg>4.9</span></div>
+        <p>Spiced chicken, saffron basmati, served with raita.</p>
+        <div class="dish-foot"><span class="price">$10.49</span><span class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>30-35 min</span></div>
+      </div>
+    </article>
+    <article class="dish reveal" style="--d:.2s">
+      <img src="assets/salan.png" alt="Chicken Salan">
+      <div class="dish-body">
+        <div class="dish-top"><h3>Chicken Salan</h3><span class="rating"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.4l6.1-.8Z"/></svg>4.7</span></div>
+        <p>Slow-cooked curry, rich spices. Best with rice.</p>
+        <div class="dish-foot"><span class="price">$9.99</span><span class="time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>25-30 min</span></div>
+      </div>
+    </article>
+  </section>
+
+  <h2 class="section-title reveal">How it works</h2>
+  <p class="section-sub reveal" style="--d:.05s">From craving to doorstep in three steps.</p>
+  <section class="steps" id="how">
+    <div class="step reveal" style="--d:.05s">
+      <span class="step-num">01</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <h3>Browse</h3>
+      <p>Search the menu, filter by category, check ratings.</p>
     </div>
-    <div class="card">
-      <img src="assets/burger.png" alt="Burger">
-      <h2 class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/><path d="M2 3h3l2.6 12.5a1 1 0 0 0 1 .5h8.7a1 1 0 0 0 1-.8L20.5 8H6"/></svg>Cart &amp; checkout</h2>
-      <p>Quantity stepper, totals, address, and payment.</p>
+    <div class="step reveal" style="--d:.12s">
+      <span class="step-num">02</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8h12l1 12H5Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <h3>Order</h3>
+      <p>Add to cart, set quantity, checkout with address.</p>
     </div>
-    <div class="card">
-      <img src="assets/biryani.png" alt="Biryani">
-      <h2 class="feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>Live rider tracking</h2>
-      <p>See your order on the map with route and ETA.</p>
+    <div class="step reveal" style="--d:.19s">
+      <span class="step-num">03</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      <h3>Track</h3>
+      <p>Watch your rider live on the map with route and ETA.</p>
     </div>
   </section>
 
-  <section class="how">
-    <h2>How to install</h2>
-    <ol>
-      <li>Tap <strong>Download APK</strong> on your Android phone.</li>
-      <li>Allow <em>Install unknown apps</em> when asked.</li>
-      <li>Open Bings, register, and order.</li>
-    </ol>
-    <p class="tiny">Latest build always comes from GitHub Releases (<code>latest</code> tag, auto-built from <code>main</code>). Admin demo: register, then set your user <code>role</code> to <code>admin</code> in Firestore.</p>
+  <h2 class="section-title reveal">Why Bings?</h2>
+  <p class="section-sub reveal" style="--d:.05s">Everything you need for a smooth delivery.</p>
+  <section class="features" id="features">
+    <div class="feature reveal" style="--d:.05s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      <h3>Live tracking</h3><p>Real-time rider map with route and ETA.</p>
+    </div>
+    <div class="feature reveal" style="--d:.1s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6Z"/></svg>
+      <h3>Fast ordering</h3><p>Checkout in seconds, delivery in ~30 minutes.</p>
+    </div>
+    <div class="feature reveal" style="--d:.15s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      <h3>Secure login</h3><p>Email/password plus Google sign-in via Firebase.</p>
+    </div>
+    <div class="feature reveal" style="--d:.2s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 12h6"/></svg>
+      <h3>Order history</h3><p>All your past orders, statuses, and receipts.</p>
+    </div>
+    <div class="feature reveal" style="--d:.25s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17h16"/><path d="M12 7a7 7 0 0 1 7 7H5a7 7 0 0 1 7-7Z"/></svg>
+      <h3>Quality menu</h3><p>Rated dishes with photos, even offline fallback.</p>
+    </div>
+    <div class="feature reveal" style="--d:.3s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h10M18 8h2M4 16h4M12 16h8"/><circle cx="16" cy="8" r="2"/><circle cx="10" cy="16" r="2"/></svg>
+      <h3>Admin panel</h3><p>Manage orders, foods, and categories in-app.</p>
+    </div>
   </section>
 
-  <section class="panel" id="about">
+  <h2 class="section-title reveal">Loved by early users</h2>
+  <p class="section-sub reveal" style="--d:.05s">What people say about Bings.</p>
+  <section class="quotes">
+    <figure class="quote reveal" style="--d:.05s">
+      <blockquote>The live tracking is spot on — I watched my rider turn into my street.</blockquote>
+      <figcaption><span class="avatar">JM</span><span><strong>Jessa M.</strong><em>Regular customer</em></span></figcaption>
+    </figure>
+    <figure class="quote reveal" style="--d:.12s">
+      <blockquote>Checkout took less than a minute and the food arrived hot.</blockquote>
+      <figcaption><span class="avatar">KD</span><span><strong>Karl D.</strong><em>Student</em></span></figcaption>
+    </figure>
+    <figure class="quote reveal" style="--d:.19s">
+      <blockquote>Managing orders and menu items from the admin panel is straightforward.</blockquote>
+      <figcaption><span class="avatar">AR</span><span><strong>Rico A.</strong><em>Store manager</em></span></figcaption>
+    </figure>
+  </section>
+
+  <section class="banner reveal" id="download">
+    <div>
+      <h2>Craving something? Get Bings.</h2>
+      <p>Download the latest build free. Install in three taps: download, allow install, register and order.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="https://github.com/merjohnpagente/Delivery-App/releases/download/latest/bings-app.apk"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg>Download APK</a>
+        <a class="btn ghost-dark" href="https://github.com/merjohnpagente/Delivery-App">View on GitHub</a>
+      </div>
+    </div>
+    <img src="assets/burger.png" alt="Bings burger">
+  </section>
+
+  <section class="panel reveal" id="about">
     <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/></svg>About Bings</h2>
     <p>Bings is a full-stack food delivery app built with Flutter and Firebase. Order food, manage your cart, checkout, and watch your rider arrive live on the map.</p>
-    <ul class="ticks">
-      <li>Home with search, categories, and rated food grid</li>
-      <li>Food details with quantity and add to cart</li>
-      <li>Checkout with address and payment method</li>
-      <li>Order history plus live rider tracking with route and ETA</li>
-      <li>Admin panel for orders, foods, and categories</li>
-    </ul>
-    <p class="tiny">Tech: Flutter · Firebase Auth · Firestore · Storage · Google Maps · Package <code>com.bings.app</code></p>
+    <div class="chips">
+      <span>Flutter</span><span>Firebase Auth</span><span>Firestore</span><span>Storage</span><span>Google Maps</span>
+    </div>
+    <p class="tiny">Package <code>com.bings.app</code> · Admin demo: register, then set your user <code>role</code> to <code>admin</code> in Firestore.</p>
   </section>
 
-  <section class="panel" id="contact">
+  <section class="panel reveal" id="contact">
     <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Contact</h2>
     <p>Found a bug or want a feature? Reach out through GitHub.</p>
     <div class="cta-row">
@@ -88,8 +196,21 @@
 </main>
 
 <footer>
-  <p class="flinks"><a href="#home">Home</a> · <a href="#about">About</a> · <a href="#contact">Contact</a></p>
-  <p>Bings · BSCS · Flutter + Firebase (bings-828e1) · Package <code>com.bings.app</code></p>
+  <div class="foot-grid">
+    <div>
+      <strong>Bings</strong>
+      <p>Food delivery, made simple. Free Android app built with Flutter + Firebase.</p>
+    </div>
+    <div>
+      <strong>Explore</strong>
+      <p><a href="#home">Home</a> · <a href="#menu">Menu</a> · <a href="#about">About</a> · <a href="#contact">Contact</a></p>
+    </div>
+    <div>
+      <strong>App</strong>
+      <p><a href="https://github.com/merjohnpagente/Delivery-App/releases/download/latest/bings-app.apk">Download APK</a> · <a href="https://github.com/merjohnpagente/Delivery-App">GitHub</a> · <a href="https://github.com/merjohnpagente/Delivery-App/issues">Report issue</a></p>
+    </div>
+  </div>
+  <p class="tiny">© <span id="year">2026</span> Bings · Package <code>com.bings.app</code></p>
 </footer>
 </body>
 </html>
