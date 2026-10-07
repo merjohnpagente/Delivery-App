@@ -14,14 +14,25 @@ import 'orders_screen.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  /// Which bottom tab to open on (0 Home, 1 Orders, 2 Cart, 3 Profile).
+  /// Used when navigating here from checkout, food detail, etc. so
+  /// the bottom nav buttons are always visible.
+  final int initialIndex;
+
+  const HomeScreen({super.key, this.initialIndex = 0});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _navIndex = 0;
+  late int _navIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _navIndex = widget.initialIndex.clamp(0, 3);
+  }
   String _selectedCategory = 'All';
   String _searchQuery = '';
 

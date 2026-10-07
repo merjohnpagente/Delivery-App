@@ -8,7 +8,7 @@ import '../services/firestore_service.dart';
 import '../services/location_service.dart';
 import '../theme/responsive.dart';
 import '../widgets/food_image.dart';
-import 'orders_screen.dart';
+import 'home_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -85,8 +85,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       await FirestoreService().placeOrder(order);
       cart.clear();
       if (!mounted) return;
+      // Land on the Orders TAB (bottom nav stays visible)
+      // instead of a bare screen without buttons.
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const OrdersScreen()),
+        MaterialPageRoute(
+            builder: (_) => const HomeScreen(initialIndex: 1)),
         (route) => route.isFirst,
       );
       ScaffoldMessenger.of(context).showSnackBar(

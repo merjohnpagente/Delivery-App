@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'auth/login_screen.dart';
 import 'edit_profile_screen.dart';
-import 'orders_screen.dart';
+import 'home_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final bool showAppBar;
@@ -163,10 +163,12 @@ class ProfileScreen extends StatelessWidget {
             _menuTile(
               icon: Icons.receipt_long_outlined,
               title: 'My Orders',
+              // Orders TAB (nav stays visible); back returns here.
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => const OrdersScreen(),
+                    builder: (_) =>
+                        const HomeScreen(initialIndex: 1),
                   ),
                 );
               },

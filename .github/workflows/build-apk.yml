@@ -1,7 +1,11 @@
-name: Build BINGS APK
+name: Build Dodo food APK
 
+# Runs ONLY after the web deploy succeeds (live first, APK second).
+# Manual runs still possible via "Run workflow".
 on:
-  push:
+  workflow_run:
+    workflows: ["Deploy Dodo food Web to GitHub Pages"]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -10,10 +14,14 @@ permissions:
 
 jobs:
   build:
+    # Skip when triggered by a failed/cancelled web deploy.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout tested commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -45,8 +53,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          name: BINGS latest build
+          name: Dodo food latest build
           body: |
             Download and install **bings-app.apk** on your Android phone.
-            Built automatically from the main branch.
+            Built automatically after the website deploys green.
           files: bings-app.apk

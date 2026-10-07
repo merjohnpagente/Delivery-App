@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/cart_provider.dart';
 import '../models/food_item.dart';
 import '../widgets/food_image.dart';
-import 'cart_screen.dart';
+import 'home_screen.dart';
 
 class FoodDetailScreen extends StatefulWidget {
   final FoodItem food;
@@ -211,11 +211,16 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                             action: SnackBarAction(
                               label: 'VIEW CART',
                               textColor: Colors.white,
+                              // Cart TAB (nav stays visible) instead of
+                              // a bare screen; back returns to Home.
                               onPressed: () {
-                                Navigator.of(context).push(
+                                Navigator.of(context)
+                                    .pushAndRemoveUntil(
                                   MaterialPageRoute(
-                                    builder: (_) => const CartScreen(),
-                                  ),
+                                      builder: (_) =>
+                                          const HomeScreen(
+                                              initialIndex: 2)),
+                                  (route) => route.isFirst,
                                 );
                               },
                             ),
