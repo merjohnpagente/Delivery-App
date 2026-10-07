@@ -9,10 +9,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'run flutterfire configure to add web support.',
-      );
+      // TODO(web): run `flutterfire configure` and paste the real web values
+      // from Firebase console (bings-828e1 > Project settings > Web app).
+      // Placeholders below compile but will NOT connect until replaced.
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -34,6 +34,16 @@ class DefaultFirebaseOptions {
     appId: '1:690198264750:android:e9ae61eabb6a33aa34a63f',
     messagingSenderId: '690198264750',
     projectId: 'bings-828e1',
+    storageBucket: 'bings-828e1.firebasestorage.app',
+  );
+
+  // TODO(web): replace placeholders with real values from `flutterfire configure`.
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'REPLACE_WITH_WEB_API_KEY',
+    appId: 'REPLACE_WITH_WEB_APP_ID',
+    messagingSenderId: '690198264750',
+    projectId: 'bings-828e1',
+    authDomain: 'bings-828e1.firebaseapp.com',
     storageBucket: 'bings-828e1.firebasestorage.app',
   );
 }

@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../firebase_options.dart';
+import 'firebase_options.dart';
 import '../models/cart_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/food_provider.dart';
