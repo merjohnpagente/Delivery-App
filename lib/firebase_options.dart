@@ -9,9 +9,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      // TODO(web): run `flutterfire configure` and paste the real web values
-      // from Firebase console (bings-828e1 > Project settings > Web app).
-      // Placeholders below compile but will NOT connect until replaced.
+      // Web config is filled from Firebase console (bings-828e1 web app).
       return web;
     }
     switch (defaultTargetPlatform) {
@@ -37,13 +35,14 @@ class DefaultFirebaseOptions {
     storageBucket: 'bings-828e1.firebasestorage.app',
   );
 
-  // TODO(web): replace placeholders with real values from `flutterfire configure`.
+  // Web config for Firebase project bings-828e1 (from Firebase console).
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'REPLACE_WITH_WEB_API_KEY',
-    appId: 'REPLACE_WITH_WEB_APP_ID',
+    apiKey: 'AIzaSyAM7aesQvWuRnHOdg5G61ZSG9zRPkGBRFc',
+    appId: '1:690198264750:web:8940241841d2076e34a63f',
     messagingSenderId: '690198264750',
     projectId: 'bings-828e1',
     authDomain: 'bings-828e1.firebaseapp.com',
     storageBucket: 'bings-828e1.firebasestorage.app',
+    measurementId: 'G-3F7KXGX7ZR',
   );
 }
