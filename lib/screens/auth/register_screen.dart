@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 Text(
-                  'Sign up to start ordering from Bings',
+                  'Sign up to start ordering from BINGS',
                   style: GoogleFonts.poppins(
                     fontSize: 15,
                     color: Colors.grey.shade600,

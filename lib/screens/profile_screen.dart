@@ -195,7 +195,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             _menuTile(
               icon: Icons.info_outlined,
-              title: 'About Bings',
+              title: 'About BINGS',
               trailingImage: 'assets/images/about.png',
               onTap: () {},
             ),
@@ -207,7 +207,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'Bings v1.0.0',
+              'BINGS v1.0.0',
               style: GoogleFonts.poppins(
                 fontSize: 12,
                 color: Colors.grey,

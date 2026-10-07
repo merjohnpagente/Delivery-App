@@ -52,7 +52,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             ),
             const SizedBox(width: 10),
             Text(
-              'Bings Admin',
+              'BINGS Admin',
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,

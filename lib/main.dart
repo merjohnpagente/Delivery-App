@@ -1,11 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../firebase_options.dart';
 import '../models/cart_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/food_provider.dart';
+import '../theme/app_theme.dart';
 import 'screens/admin/admin_home.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
@@ -31,14 +31,9 @@ class BingsApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FoodProvider()),
       ],
       child: MaterialApp(
-        title: 'Bings',
+        title: 'BINGS',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-          useMaterial3: true,
-          textTheme: GoogleFonts.poppinsTextTheme(),
-          scaffoldBackgroundColor: Colors.white,
-        ),
+        theme: AppTheme.light(),
         home: const AuthGate(),
       ),
     );

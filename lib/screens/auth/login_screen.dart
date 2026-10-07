@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../theme/app_theme.dart';
 import '../role_router.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
 
+/// Clean login screen: brand header, email + password form,
+/// Google sign-in, link to registration.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -26,6 +29,12 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void _goHome() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const RoleRouter()),
+    );
+  }
+
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     final auth = context.read<AuthProvider>();
@@ -35,9 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     if (!mounted) return;
     if (success) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const RoleRouter()),
-      );
+      _goHome();
     } else {
       _showError(auth.error ?? 'Login failed.');
     }
@@ -48,9 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final success = await auth.signInWithGoogle();
     if (!mounted) return;
     if (success) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const RoleRouter()),
-      );
+      _goHome();
     } else {
       _showError(auth.error ?? 'Google sign-in failed.');
     }
@@ -58,7 +63,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.error,
+      ),
     );
   }
 
@@ -66,47 +74,53 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final isLoading = context.watch<AuthProvider>().isLoading;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(AppSpacing.xxl),
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
                 Text(
-                  'Welcome back 👋',
+                  'BINGS',
                   style: GoogleFonts.poppins(
-                    fontSize: 28,
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 4,
+                    color: AppColors.primary,
                   ),
                 ),
+                const SizedBox(height: AppSpacing.sm),
                 Text(
-                  'Login to order delicious food',
+                  'Welcome back! Login to order delicious food.',
                   style: GoogleFonts.poppins(
-                    fontSize: 15,
-                    color: Colors.grey.shade600,
+                    fontSize: 14,
+                    color: AppColors.textGrey,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSpacing.xxxl),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: _inputDecoration('Email', Icons.email_outlined),
+                  decoration: const InputDecoration(
+                    hintText: 'Email',
+                    prefixIcon: Icon(Icons.email_outlined),
+                  ),
                   validator: (v) => v == null || !v.contains('@')
                       ? 'Enter a valid email'
                       : null,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
-                  decoration: _inputDecoration(
-                    'Password',
-                    Icons.lock_outlined,
-                    suffix: IconButton(
+                  decoration: InputDecoration(
+                    hintText: 'Password',
+                    prefixIcon: const Icon(Icons.lock_outlined),
+                    suffixIcon: IconButton(
                       icon: Icon(_obscurePassword
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined),
@@ -124,73 +138,53 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (_) => const ForgotPasswordScreen(),
+                          builder: (_) =>
+                              const ForgotPasswordScreen(),
                         ),
                       );
                     },
-                    child: Text(
-                      'Forgot password?',
-                      style: GoogleFonts.poppins(color: Colors.deepOrange),
-                    ),
+                    child: const Text('Forgot password?'),
                   ),
                 ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: isLoading ? null : _login,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepOrange,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                            'Login',
-                            style: GoogleFonts.poppins(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
+                const SizedBox(height: AppSpacing.sm),
+                ElevatedButton(
+                  onPressed: isLoading ? null : _login,
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
                           ),
-                  ),
+                        )
+                      : const Text('Login'),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 Row(
                   children: [
                     const Expanded(child: Divider()),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('or', style: GoogleFonts.poppins()),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                      ),
+                      child: Text(
+                        'or',
+                        style: GoogleFonts.poppins(
+                          color: AppColors.textGrey,
+                        ),
+                      ),
                     ),
                     const Expanded(child: Divider()),
                   ],
                 ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: OutlinedButton.icon(
-                    onPressed: isLoading ? null : _googleLogin,
-                    icon: const Icon(Icons.g_mobiledata, size: 28),
-                    label: Text(
-                      'Continue with Google',
-                      style: GoogleFonts.poppins(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                  ),
+                const SizedBox(height: AppSpacing.lg),
+                OutlinedButton.icon(
+                  onPressed: isLoading ? null : _googleLogin,
+                  icon: const Icon(Icons.g_mobiledata, size: 28),
+                  label: const Text('Continue with Google'),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.xxl),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -209,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text(
                         'Sign up',
                         style: GoogleFonts.poppins(
-                          color: Colors.deepOrange,
+                          color: AppColors.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -221,23 +215,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  InputDecoration _inputDecoration(String hint, IconData icon,
-      {Widget? suffix}) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: GoogleFonts.poppins(fontSize: 14),
-      prefixIcon: Icon(icon),
-      suffixIcon: suffix,
-      filled: true,
-      fillColor: Colors.grey.shade100,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide.none,
-      ),
-      contentPadding: const EdgeInsets.symmetric(vertical: 16),
     );
   }
 }
