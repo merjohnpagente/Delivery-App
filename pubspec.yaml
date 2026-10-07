@@ -1,5 +1,5 @@
-name: Bings
-description: Bings - Food Delivery App UI in Flutter.
+name: bings
+description: BINGS - Food Delivery App UI in Flutter.
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -19,7 +19,7 @@ dependencies:
   google_sign_in: ^6.1.0
   google_maps_flutter: ^2.5.0
   geolocator: ^10.1.0
-  flutter_polyline_points: ^2.0.0
+  flutter_polyline_points: 1.0.0
   flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
@@ -60,3 +60,13 @@ flutter:
     - assets/images/teamwork.png
     - assets/images/thumb-up.png
     - assets/images/woman.png
+
+# App icon: vector source is assets/icon/app_icon.svg (crisp at any size).
+# PNG master + Android mipmaps are pre-generated and committed.
+# Regenerate locally with: dart run flutter_launcher_icons
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#FF5722"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"

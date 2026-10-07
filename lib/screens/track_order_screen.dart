@@ -104,9 +104,9 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
         final polylinePoints = PolylinePoints();
         final result =
             await polylinePoints.getRouteBetweenCoordinates(
-          googleApiKey: AppConfig.googleMapsApiKey,
-          origin: PointLatLng(origin.latitude, origin.longitude),
-          destination: PointLatLng(dest.latitude, dest.longitude),
+          AppConfig.googleMapsApiKey,
+          PointLatLng(origin.latitude, origin.longitude),
+          PointLatLng(dest.latitude, dest.longitude),
         );
         if (result.points.isNotEmpty) {
           points = result.points

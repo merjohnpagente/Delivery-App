@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import '../models/category.dart';
 import '../models/food_item.dart';
 import '../models/order.dart';

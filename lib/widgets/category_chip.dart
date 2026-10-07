@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Category;
 import 'package:google_fonts/google_fonts.dart';
 import '../models/category.dart';
 import 'food_image.dart';

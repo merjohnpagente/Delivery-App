@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' hide Category;
 import '../data/sample_data.dart';
 import '../models/category.dart';
 import '../models/food_item.dart';
