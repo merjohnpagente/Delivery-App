@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:http/http.dart' as http;
 import '../config.dart';
 import '../models/order.dart';
 import '../services/firestore_service.dart';
@@ -101,18 +102,8 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
     if (AppConfig.googleMapsApiKey != 'YOUR_MAPS_API_KEY') {
       try {
         setState(() => _loadingRoute = true);
-        final polylinePoints = PolylinePoints();
-        final result =
-            await polylinePoints.getRouteBetweenCoordinates(
-          AppConfig.googleMapsApiKey,
-          PointLatLng(origin.latitude, origin.longitude),
-          PointLatLng(dest.latitude, dest.longitude),
-        );
-        if (result.points.isNotEmpty) {
-          points = result.points
-              .map((p) => LatLng(p.latitude, p.longitude))
-              .toList();
-        }
+        final fetched = await _fetchRoute(origin, dest);
+        if (fetched.isNotEmpty) points = fetched;
       } catch (_) {
         // Keep straight-line fallback.
       } finally {
@@ -167,6 +158,59 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
         80,
       ),
     );
+  }
+
+  /// Fetch driving route via the Directions API and decode its polyline.
+  /// Returns empty list on any failure (caller keeps straight-line fallback).
+  Future<List<LatLng>> _fetchRoute(LatLng origin, LatLng dest) async {
+    final uri = Uri.https(
+      'maps.googleapis.com',
+      '/maps/api/directions/json',
+      {
+        'origin': '${origin.latitude},${origin.longitude}',
+        'destination': '${dest.latitude},${dest.longitude}',
+        'mode': 'driving',
+        'key': AppConfig.googleMapsApiKey,
+      },
+    );
+    final response =
+        await http.get(uri).timeout(const Duration(seconds: 10));
+    if (response.statusCode != 200) return [];
+    final json =
+        jsonDecode(response.body) as Map<String, dynamic>;
+    if (json['status'] != 'OK') return [];
+    final routes = json['routes'] as List<dynamic>;
+    if (routes.isEmpty) return [];
+    final encoded = routes.first['overview_polyline']?['points'];
+    if (encoded is! String || encoded.isEmpty) return [];
+    return _decodePolyline(encoded);
+  }
+
+  /// Decode a Google encoded polyline into coordinates.
+  List<LatLng> _decodePolyline(String encoded) {
+    final points = <LatLng>[];
+    int index = 0, lat = 0, lng = 0;
+    while (index < encoded.length) {
+      int shift = 0, result = 0, b;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      final dlat = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      lat += dlat;
+      shift = 0;
+      result = 0;
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      final dlng = (result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      lng += dlng;
+      points.add(LatLng(lat / 1e5, lng / 1e5));
+    }
+    return points;
   }
 
   /// Rough ETA from rider to customer at average rider speed.
