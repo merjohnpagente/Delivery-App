@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Single source of truth for the BINGS look and feel.
+/// Single source of truth for the Dodo food look and feel.
 /// Use these tokens instead of hardcoding colors, radii or spacing
 /// so the whole app stays visually consistent.
 class AppColors {

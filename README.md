@@ -1,4 +1,4 @@
-# Bings — Food Delivery App (Flutter + Firebase)
+# Dodo food — Food Delivery App (Flutter + Firebase)
 
 A full-stack food delivery app built in Flutter with a Firebase backend
 (Firestore, Auth, Storage), based on the

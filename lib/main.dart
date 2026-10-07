@@ -31,7 +31,7 @@ class BingsApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FoodProvider()),
       ],
       child: MaterialApp(
-        title: 'BINGS',
+        title: 'Dodo food',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light(),
         home: const AuthGate(),

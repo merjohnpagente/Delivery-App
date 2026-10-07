@@ -24,7 +24,7 @@ class AppUser {
   factory AppUser.fromMap(Map<String, dynamic> map) {
     return AppUser(
       uid: map['uid'] ?? '',
-      name: map['name'] ?? 'Bings User',
+      name: map['name'] ?? 'Dodo User',
       email: map['email'] ?? '',
       phone: map['phone'],
       address: map['address'],

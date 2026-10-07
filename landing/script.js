@@ -1,4 +1,4 @@
-// Bings landing interactions. No dependencies.
+// Dodo food landing interactions. No dependencies.
 (function () {
   // Reveal on scroll
   var els = document.querySelectorAll('.reveal');

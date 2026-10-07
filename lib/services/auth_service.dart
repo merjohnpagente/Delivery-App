@@ -66,7 +66,7 @@ class AuthService {
       await _db.collection('users').doc(userCredential.user!.uid).set(
             AppUser(
               uid: userCredential.user!.uid,
-              name: userCredential.user!.displayName ?? 'Bings User',
+              name: userCredential.user!.displayName ?? 'Dodo User',
               email: userCredential.user!.email ?? '',
               photoUrl: userCredential.user!.photoURL,
             ).toMap(),

@@ -92,7 +92,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Order placed! Thank you for ordering from BINGS.',
+            'Order placed! Thank you for ordering from Dodo food.',
             style: GoogleFonts.poppins(),
           ),
           backgroundColor: Colors.green,

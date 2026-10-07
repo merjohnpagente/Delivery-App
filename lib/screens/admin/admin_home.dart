@@ -31,7 +31,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Text(
-          'BINGS Admin',
+          'Dodo Admin',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w600,
             color: Colors.black87,

@@ -13,7 +13,7 @@ class AppConfig {
   // Default store location (Cebu City). Change to your store.
   static const double storeLat = 10.3157;
   static const double storeLng = 123.8854;
-  static const String storeName = 'BINGS Main Store';
+  static const String storeName = 'Dodo Main Store';
 
   // Average rider speed used for ETA estimate (km/h).
   static const double riderSpeedKmh = 30.0;

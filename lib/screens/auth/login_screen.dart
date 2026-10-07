@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: AppSpacing.xxl),
                 Text(
-                  'BINGS',
+                  'DODO FOOD',
                   style: GoogleFonts.poppins(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,

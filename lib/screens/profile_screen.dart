@@ -220,7 +220,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             _menuTile(
               icon: Icons.info_outlined,
-              title: 'About BINGS',
+              title: 'About Dodo food',
               trailingImage: 'assets/images/about.png',
               onTap: () {},
             ),
@@ -232,7 +232,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'BINGS v1.0.0',
+              'Dodo food v1.0.0',
               style: GoogleFonts.poppins(
                 fontSize: 12,
                 color: Colors.grey,
