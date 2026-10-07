@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../models/cart_provider.dart';
 import '../models/food_item.dart';
+import '../widgets/food_image.dart';
 import 'cart_screen.dart';
 
 class FoodDetailScreen extends StatefulWidget {
@@ -43,18 +44,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               onPressed: () => Navigator.of(context).pop(),
             ),
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                widget.food.image,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  color: Colors.orange.shade100,
-                  child: const Icon(
-                    Icons.fastfood,
-                    size: 100,
-                    color: Colors.deepOrange,
-                  ),
-                ),
-              ),
+              background: FoodImage(image: widget.food.image),
             ),
           ),
           SliverToBoxAdapter(

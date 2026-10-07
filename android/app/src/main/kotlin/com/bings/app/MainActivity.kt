@@ -1,4 +1,4 @@
-package com.example.bings
+package com.bings.app
 
 import io.flutter.embedding.android.FlutterActivity
 

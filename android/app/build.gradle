@@ -2,10 +2,11 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
 }
 
 android {
-    namespace = "com.example.bings"
+    namespace = "com.bings.app"
     compileSdk = 34
 
     compileOptions {
@@ -18,8 +19,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.bings"
-        minSdk = 21
+        applicationId = "com.bings.app"
+        minSdk = 23
+        multiDexEnabled = true
         targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"

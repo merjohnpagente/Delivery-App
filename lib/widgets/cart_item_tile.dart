@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/food_item.dart';
+import 'food_image.dart';
 
 class CartItemTile extends StatelessWidget {
   final CartItem cartItem;
@@ -34,20 +35,11 @@ class CartItemTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ClipRRect(
+          FoodImage(
+            image: cartItem.food.image,
+            width: 70,
+            height: 70,
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              cartItem.food.image,
-              width: 70,
-              height: 70,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                width: 70,
-                height: 70,
-                color: Colors.orange.shade50,
-                child: const Icon(Icons.fastfood, color: Colors.orange),
-              ),
-            ),
           ),
           const SizedBox(width: 12),
           Expanded(

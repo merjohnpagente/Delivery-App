@@ -1,13 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import 'auth/login_screen.dart';
+import 'orders_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   final bool showAppBar;
 
   const ProfileScreen({super.key, this.showAppBar = false});
 
+  Future<void> _logout(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Text(
+          'Logout?',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
+        content: Text(
+          'Are you sure you want to logout?',
+          style: GoogleFonts.poppins(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: Colors.grey),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(
+              'Logout',
+              style: GoogleFonts.poppins(
+                color: Colors.red,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await context.read<AuthProvider>().logout();
+      if (context.mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (_) => false,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    final profile = auth.profile;
+    final name = profile?.name ??
+        auth.firebaseUser?.displayName ??
+        'Bings User';
+    final email =
+        profile?.email ?? auth.firebaseUser?.email ?? '';
+    final photoUrl = profile?.photoUrl ?? auth.firebaseUser?.photoURL;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: showAppBar
@@ -57,26 +117,20 @@ class ProfileScreen extends StatelessWidget {
               child: Column(
                 children: [
                   ClipOval(
-                    child: Image.asset(
-                      'assets/images/woman.png',
-                      width: 90,
-                      height: 90,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 90,
-                        height: 90,
-                        color: Colors.white24,
-                        child: const Icon(
-                          Icons.person,
-                          size: 50,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                    child: photoUrl != null
+                        ? Image.network(
+                            photoUrl,
+                            width: 90,
+                            height: 90,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                _avatarPlaceholder(),
+                          )
+                        : _avatarPlaceholder(),
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Guest User',
+                    name,
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -84,12 +138,23 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'guest@bings.app',
+                    email,
                     style: GoogleFonts.poppins(
                       fontSize: 14,
                       color: Colors.white70,
                     ),
                   ),
+                  if (profile?.address != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      profile!.address!,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -97,16 +162,24 @@ class ProfileScreen extends StatelessWidget {
             _menuTile(
               icon: Icons.receipt_long_outlined,
               title: 'My Orders',
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const OrdersScreen(),
+                  ),
+                );
+              },
             ),
             _menuTile(
               icon: Icons.location_on_outlined,
               title: 'Delivery Address',
+              subtitle: profile?.address ?? 'Not set',
               onTap: () {},
             ),
             _menuTile(
-              icon: Icons.payment_outlined,
-              title: 'Payment Methods',
+              icon: Icons.phone_outlined,
+              title: 'Phone',
+              subtitle: profile?.phone ?? 'Not set',
               onTap: () {},
             ),
             _menuTile(
@@ -130,7 +203,7 @@ class ProfileScreen extends StatelessWidget {
               icon: Icons.logout_outlined,
               title: 'Logout',
               color: Colors.red,
-              onTap: () {},
+              onTap: () => _logout(context),
             ),
             const SizedBox(height: 12),
             Text(
@@ -146,10 +219,30 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  Widget _avatarPlaceholder() {
+    return Image.asset(
+      'assets/images/woman.png',
+      width: 90,
+      height: 90,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        width: 90,
+        height: 90,
+        color: Colors.white24,
+        child: const Icon(
+          Icons.person,
+          size: 50,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
   Widget _menuTile({
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    String? subtitle,
     String? trailingImage,
     Color? color,
   }) {
@@ -177,6 +270,15 @@ class ProfileScreen extends StatelessWidget {
             color: color,
           ),
         ),
+        subtitle: subtitle != null
+            ? Text(
+                subtitle,
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              )
+            : null,
         trailing: trailingImage != null
             ? ClipOval(
                 child: Image.asset(

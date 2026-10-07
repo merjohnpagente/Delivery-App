@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/food_item.dart';
+import 'food_image.dart';
 
 class FoodCard extends StatelessWidget {
   final FoodItem food;
@@ -39,15 +40,9 @@ class FoodCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(20),
                   ),
-                  child: Image.asset(
-                    food.image,
+                  child: FoodImage(
+                    image: food.image,
                     width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const Icon(
-                      Icons.fastfood,
-                      size: 50,
-                      color: Colors.orange,
-                    ),
                   ),
                 ),
               ),

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../data/sample_data.dart';
 import '../models/cart_provider.dart';
+import '../models/category.dart';
+import '../providers/auth_provider.dart';
+import '../providers/food_provider.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/food_card.dart';
 import 'cart_screen.dart';
 import 'food_detail_screen.dart';
+import 'orders_screen.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,20 +24,27 @@ class _HomeScreenState extends State<HomeScreen> {
   String _selectedCategory = 'All';
   String _searchQuery = '';
 
-  List<String> get _categoryNames =>
-      ['All', ...SampleData.categories.map((c) => c.name)];
-
   @override
   Widget build(BuildContext context) {
+    if (_navIndex == 1) return const OrdersScreen(showAppBar: true);
     if (_navIndex == 2) return const CartScreen(showAppBar: true);
     if (_navIndex == 3) return const ProfileScreen(showAppBar: true);
 
-    final filteredFoods = SampleData.foods.where((food) {
-      final matchesCategory =
-          _selectedCategory == 'All' || food.category == _selectedCategory;
-      final matchesSearch = _searchQuery.isEmpty ||
+    final foodProvider = context.watch<FoodProvider>();
+    final auth = context.watch<AuthProvider>();
+    final userName = auth.profile?.name ??
+        auth.firebaseUser?.displayName ??
+        'Guest';
+
+    final categoryNames = [
+      'All',
+      ...foodProvider.categories.map((c) => c.name)
+    ];
+
+    final filteredFoods =
+        foodProvider.foodsByCategory(_selectedCategory).where((food) {
+      return _searchQuery.isEmpty ||
           food.name.toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
     }).toList();
 
     return Scaffold(
@@ -45,20 +55,22 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           children: [
             ClipOval(
-              child: Image.asset(
-                'assets/images/avatar.jpg',
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.person),
-              ),
+              child: auth.profile?.photoUrl != null
+                  ? Image.network(
+                      auth.profile!.photoUrl!,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _avatarFallback(),
+                    )
+                  : _avatarFallback(),
             ),
             const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Hello!',
+                  'Hello, $userName!',
                   style: GoogleFonts.poppins(
                     fontSize: 12,
                     color: Colors.grey,
@@ -146,8 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 52,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  children: _categoryNames.map((name) {
-                    final matches = SampleData.categories
+                  children: categoryNames.map((name) {
+                    final matches = foodProvider.categories
                         .where((c) => c.name == name);
                     final cat = matches.isNotEmpty
                         ? matches.first
@@ -186,32 +198,43 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.72,
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 14,
+              if (filteredFoods.isEmpty)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Text(
+                      'No food found.',
+                      style: GoogleFonts.poppins(color: Colors.grey),
+                    ),
+                  ),
+                )
+              else
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.72,
+                    crossAxisSpacing: 14,
+                    mainAxisSpacing: 14,
+                  ),
+                  itemCount: filteredFoods.length,
+                  itemBuilder: (context, index) {
+                    final food = filteredFoods[index];
+                    return FoodCard(
+                      food: food,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                FoodDetailScreen(food: food),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
-                itemCount: filteredFoods.length,
-                itemBuilder: (context, index) {
-                  final food = filteredFoods[index];
-                  return FoodCard(
-                    food: food,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              FoodDetailScreen(food: food),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
               const SizedBox(height: 20),
             ],
           ),
@@ -232,9 +255,9 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           const BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Search',
+            icon: Icon(Icons.receipt_long_outlined),
+            activeIcon: Icon(Icons.receipt_long),
+            label: 'Orders',
           ),
           BottomNavigationBarItem(
             icon: Stack(
@@ -273,6 +296,16 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _avatarFallback() {
+    return Image.asset(
+      'assets/images/avatar.jpg',
+      width: 40,
+      height: 40,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const Icon(Icons.person),
     );
   }
 }

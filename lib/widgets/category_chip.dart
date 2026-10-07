@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/category.dart';
+import 'food_image.dart';
 
 class CategoryChip extends StatelessWidget {
   final Category category;
@@ -40,16 +41,10 @@ class CategoryChip extends StatelessWidget {
         child: Row(
           children: [
             ClipOval(
-              child: Image.asset(
-                category.image,
+              child: FoodImage(
+                image: category.image,
                 width: 30,
                 height: 30,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(
-                  Icons.fastfood,
-                  size: 24,
-                  color: Colors.orange,
-                ),
               ),
             ),
             const SizedBox(width: 8),
