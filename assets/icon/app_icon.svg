@@ -6,13 +6,15 @@
     </linearGradient>
   </defs>
   <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#bg)"/>
-  <!-- cloche handle -->
-  <circle cx="256" cy="148" r="22" fill="#FFFFFF"/>
-  <!-- cloche dome -->
-  <path d="M96,336 A160,160 0 0 1 416,336 Z" fill="#FFFFFF"/>
-  <!-- serving plate -->
-  <rect x="76" y="336" width="360" height="36" rx="18" fill="#FFFFFF"/>
+  <!-- rider helmet -->
+  <circle cx="256" cy="228" r="108" fill="#FFFFFF"/>
+  <!-- helmet visor -->
+  <rect x="170" y="208" width="172" height="42" rx="21" fill="#D84315"/>
   <!-- motion lines -->
-  <rect x="96" y="408" width="200" height="20" rx="10" fill="#FFFFFF" opacity="0.55"/>
-  <rect x="96" y="440" width="130" height="20" rx="10" fill="#FFFFFF" opacity="0.35"/>
+  <rect x="80" y="376" width="112" height="20" rx="10" fill="#FFFFFF" opacity="0.55"/>
+  <rect x="80" y="408" width="72" height="20" rx="10" fill="#FFFFFF" opacity="0.35"/>
+  <!-- delivery box -->
+  <rect x="176" y="348" width="160" height="92" rx="16" fill="#FFFFFF"/>
+  <!-- box lid strap -->
+  <rect x="176" y="370" width="160" height="12" fill="#D84315"/>
 </svg>
