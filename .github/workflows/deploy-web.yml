@@ -25,8 +25,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Flutter
+        # Pinned to 3.24.x for web only: the app's firebase packages
+        # (auth_web 5.x) predate Dart's js_interop rework and do not
+        # compile on the newest Dart. APK workflow keeps using stable.
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.24.5'
           channel: stable
 
       - name: Install dependencies
