@@ -5,6 +5,7 @@ import '../models/order.dart';
 import '../providers/auth_provider.dart';
 import '../services/firestore_service.dart';
 import '../widgets/food_image.dart';
+import 'track_order_screen.dart';
 
 class OrdersScreen extends StatelessWidget {
   final bool showAppBar;
@@ -189,6 +190,42 @@ class OrdersScreen extends StatelessWidget {
               ),
             ],
           ),
+          if (order.status.toLowerCase() != 'delivered' &&
+              order.status.toLowerCase() != 'cancelled') ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 46,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          TrackOrderScreen(orderId: order.id),
+                    ),
+                  );
+                },
+                icon: const Icon(
+                  Icons.location_on,
+                  size: 18,
+                  color: Colors.deepOrange,
+                ),
+                label: Text(
+                  'Track Rider',
+                  style: GoogleFonts.poppins(
+                    color: Colors.deepOrange,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.deepOrange),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

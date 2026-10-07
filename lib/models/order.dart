@@ -12,6 +12,11 @@ class Order {
   final String address;
   final String paymentMethod;
   final DateTime createdAt;
+  // Live delivery tracking (set by admin; customer location saved at checkout).
+  final double? riderLat;
+  final double? riderLng;
+  final double? customerLat;
+  final double? customerLng;
 
   const Order({
     required this.id,
@@ -23,9 +28,17 @@ class Order {
     required this.address,
     required this.paymentMethod,
     required this.createdAt,
+    this.riderLat,
+    this.riderLng,
+    this.customerLat,
+    this.customerLng,
   });
 
   double get grandTotal => total + deliveryFee;
+
+  bool get hasRiderLocation => riderLat != null && riderLng != null;
+  bool get hasCustomerLocation =>
+      customerLat != null && customerLng != null;
 
   factory Order.fromMap(String id, Map<String, dynamic> map) {
     final items = (map['items'] as List<dynamic>? ?? [])
@@ -44,6 +57,10 @@ class Order {
       createdAt: createdAt is Timestamp
           ? createdAt.toDate()
           : DateTime.tryParse('$createdAt') ?? DateTime.now(),
+      riderLat: (map['riderLat'] as num?)?.toDouble(),
+      riderLng: (map['riderLng'] as num?)?.toDouble(),
+      customerLat: (map['customerLat'] as num?)?.toDouble(),
+      customerLng: (map['customerLng'] as num?)?.toDouble(),
     );
   }
 
@@ -57,6 +74,10 @@ class Order {
       'address': address,
       'paymentMethod': paymentMethod,
       'createdAt': Timestamp.fromDate(createdAt),
+      if (riderLat != null) 'riderLat': riderLat,
+      if (riderLng != null) 'riderLng': riderLng,
+      if (customerLat != null) 'customerLat': customerLat,
+      if (customerLng != null) 'customerLng': customerLng,
     };
   }
 }

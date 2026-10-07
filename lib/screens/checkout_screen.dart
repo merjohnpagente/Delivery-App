@@ -5,6 +5,7 @@ import '../models/cart_provider.dart';
 import '../models/order.dart';
 import '../providers/auth_provider.dart';
 import '../services/firestore_service.dart';
+import '../services/location_service.dart';
 import '../widgets/food_image.dart';
 import 'orders_screen.dart';
 
@@ -59,6 +60,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
     setState(() => _placingOrder = true);
     try {
+      // Capture customer GPS location for live delivery tracking.
+      final position = await LocationService().currentPosition();
       final order = Order(
         id: '',
         userId: auth.firebaseUser!.uid,
@@ -68,6 +71,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             '${_nameController.text.trim()}, ${_phoneController.text.trim()}, ${_addressController.text.trim()}',
         paymentMethod: _paymentMethod,
         createdAt: DateTime.now(),
+        customerLat: position?.latitude,
+        customerLng: position?.longitude,
       );
       await FirestoreService().placeOrder(order);
       cart.clear();

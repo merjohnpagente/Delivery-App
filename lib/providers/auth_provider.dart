@@ -18,6 +18,10 @@ class AuthProvider extends ChangeNotifier {
   String? get error => _error;
   bool get isLoggedIn => _firebaseUser != null;
 
+  /// True when the signed-in user has the admin role.
+  /// Falls back to false while the profile is still loading.
+  bool get isAdmin => _profile?.isAdmin ?? false;
+
   AuthProvider() {
     _authService.authStateChanges.listen(_onAuthChanged);
   }

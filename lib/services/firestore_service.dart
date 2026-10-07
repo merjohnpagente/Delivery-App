@@ -9,8 +9,9 @@ import '../models/order.dart';
 ///   categories/{id} -> { name, image }
 ///   foods/{id}      -> { name, description, price, rating, image,
 ///                        category, deliveryTime }
-///   orders/{id}     -> { userId, items, total, status, address,
-///                        paymentMethod, createdAt }
+///   orders/{id}     -> { userId, items, total, deliveryFee, status,
+///                        address, paymentMethod, createdAt,
+///                        riderLat?, riderLng?, customerLat?, customerLng? }
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -75,5 +76,72 @@ class FirestoreService {
         .map((snap) => snap.docs
             .map((doc) => Order.fromMap(doc.id, doc.data()))
             .toList());
+  }
+
+  /// Live stream of a single order (for the tracking screen).
+  Stream<Order?> orderStream(String orderId) {
+    return _db
+        .collection('orders')
+        .doc(orderId)
+        .snapshots()
+        .map((doc) => doc.exists ? Order.fromMap(doc.id, doc.data()!) : null);
+  }
+
+  /// Live list of ALL orders, newest first (admin only).
+  Stream<List<Order>> allOrdersStream() {
+    return _db
+        .collection('orders')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs
+            .map((doc) => Order.fromMap(doc.id, doc.data()))
+            .toList());
+  }
+
+  /// Admin: update order status.
+  Future<void> updateOrderStatus(String orderId, String status) {
+    return _db.collection('orders').doc(orderId).update({'status': status});
+  }
+
+  /// Admin: update rider live location on an order.
+  Future<void> updateRiderLocation(
+      String orderId, double lat, double lng) {
+    return _db.collection('orders').doc(orderId).update({
+      'riderLat': lat,
+      'riderLng': lng,
+    });
+  }
+
+  // ---------- Admin: foods ----------
+
+  /// Admin: add a food item. Returns the new document id.
+  Future<String> addFood(FoodItem food) async {
+    final ref = await _db.collection('foods').add(food.toMap());
+    return ref.id;
+  }
+
+  /// Admin: update a food item.
+  Future<void> updateFood(String foodId, Map<String, dynamic> data) {
+    return _db.collection('foods').doc(foodId).update(data);
+  }
+
+  /// Admin: delete a food item.
+  Future<void> deleteFood(String foodId) {
+    return _db.collection('foods').doc(foodId).delete();
+  }
+
+  // ---------- Admin: categories ----------
+
+  /// Admin: add a category. Returns the new document id.
+  Future<String> addCategory(String name, String image) async {
+    final ref = await _db
+        .collection('categories')
+        .add({'name': name, 'image': image});
+    return ref.id;
+  }
+
+  /// Admin: delete a category.
+  Future<void> deleteCategory(String categoryId) {
+    return _db.collection('categories').doc(categoryId).delete();
   }
 }

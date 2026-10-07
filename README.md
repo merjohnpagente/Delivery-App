@@ -80,12 +80,31 @@ flutter run
 3. Firestore collections used by the app:
 
 ```
-users/{uid}      → uid, name, email, phone?, address?, photoUrl?
+users/{uid}      → uid, name, email, role ('customer'|'admin'),
+                    phone?, address?, photoUrl?
 categories/{id}  → name, image
 foods/{id}       → name, description, price, rating, image, category, deliveryTime
 orders/{id}      → userId, items[], total, deliveryFee, status,
-                    address, paymentMethod, createdAt
+                    address, paymentMethod, createdAt,
+                    riderLat?, riderLng?, customerLat?, customerLng?
 ```
+
+### Admin accounts
+
+1. Register the account normally in the app (it gets `role: 'customer'`).
+2. In Firestore console, open `users/{uid}` and set `role` to `'admin'`.
+3. Next login routes to the **Admin UI** (orders, foods, categories management).
+
+### Live rider tracking
+
+- Checkout saves the customer GPS location on the order.
+- Admin sets the rider lat/lng + status per order (Admin → Orders).
+- Customer taps **Track Rider** on an order to see the live map, route and ETA.
+
+Needs a Google Maps API key (Maps SDK for Android + Directions API,
+restricted to `com.bings.app`) in both:
+- `android/app/src/main/AndroidManifest.xml` (`com.google.android.geo.API_KEY`)
+- `lib/config.dart` (`AppConfig.googleMapsApiKey`, used for route polylines)
 
 Until the `foods` / `categories` collections have documents, the app
 shows the bundled sample menu as a fallback.
@@ -96,22 +115,28 @@ shows the bundled sample menu as a fallback.
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid))
+             .data.role == 'admin';
+    }
     match /users/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
     match /categories/{id} {
       allow read: if true;
-      allow write: if false; // admin app only
+      allow write: if isAdmin();
     }
     match /foods/{id} {
       allow read: if true;
-      allow write: if false; // admin app only
+      allow write: if isAdmin();
     }
     match /orders/{orderId} {
       allow create: if request.auth != null
         && request.resource.data.userId == request.auth.uid;
       allow read: if request.auth != null
-        && resource.data.userId == request.auth.uid;
+        && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
     }
   }
 }

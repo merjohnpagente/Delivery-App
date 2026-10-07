@@ -6,6 +6,7 @@ import '../firebase_options.dart';
 import '../models/cart_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/food_provider.dart';
+import 'screens/admin/admin_home.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/splash_screen.dart';
@@ -44,7 +45,7 @@ class BingsApp extends StatelessWidget {
   }
 }
 
-/// Routes to Home when logged in, Login when logged out,
+/// Routes to AdminHome (admin), Home (customer), or Login (logged out),
 /// showing the splash screen while auth state is loading.
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -55,11 +56,10 @@ class AuthGate extends StatelessWidget {
     // While Firebase restores the session, show the splash screen.
     if (auth.firebaseUser == null && auth.profile == null) {
       // Give Firebase a moment; if still logged out, show login.
-      // AuthProvider starts with nulls, so check a short delay via
-      // FutureBuilder-like behavior: show splash first.
       return const _SplashOrLogin();
     }
     if (auth.isLoggedIn) {
+      if (auth.isAdmin) return const AdminHomeScreen();
       return const HomeScreen();
     }
     return const LoginScreen();
@@ -87,7 +87,10 @@ class _SplashOrLoginState extends State<_SplashOrLogin> {
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
-    if (auth.isLoggedIn) return const HomeScreen();
+    if (auth.isLoggedIn) {
+      if (auth.isAdmin) return const AdminHomeScreen();
+      return const HomeScreen();
+    }
     if (!_splashDone) return const SplashScreen();
     return const LoginScreen();
   }
