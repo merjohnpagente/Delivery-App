@@ -5,6 +5,7 @@ import '../models/cart_provider.dart';
 import '../models/category.dart';
 import '../providers/auth_provider.dart';
 import '../providers/food_provider.dart';
+import '../theme/responsive.dart';
 import '../widgets/category_chip.dart';
 import '../widgets/food_card.dart';
 import 'cart_screen.dart';
@@ -115,11 +116,15 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: Responsive.centered(
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.pagePadding(
+                  MediaQuery.sizeOf(context).width),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               const SizedBox(height: 8),
               Text(
                 'What would you like\nto eat today?',
@@ -209,16 +214,22 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 )
               else
-                GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.72,
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 14,
-                  ),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final columns = Responsive.columnsForWidth(
+                        constraints.maxWidth);
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics:
+                          const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: columns,
+                        childAspectRatio:
+                            columns > 2 ? 0.78 : 0.72,
+                        crossAxisSpacing: 14,
+                        mainAxisSpacing: 14,
+                      ),
                   itemCount: filteredFoods.length,
                   itemBuilder: (context, index) {
                     final food = filteredFoods[index];
@@ -234,9 +245,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     );
                   },
+                    );
+                  },
                 ),
               const SizedBox(height: 20),
-            ],
+              ],
+            ),
           ),
         ),
       ),

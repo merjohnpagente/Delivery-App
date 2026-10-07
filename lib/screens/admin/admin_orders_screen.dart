@@ -82,10 +82,12 @@ class AdminOrdersScreen extends StatelessWidget {
             style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey),
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: DropdownButtonFormField<String>(
+          // Side-by-side on normal phones, stacked on narrow ones
+          // so the dropdown and button never squeeze/overflow.
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final narrow = constraints.maxWidth < 380;
+              final dropdown = DropdownButtonFormField<String>(
                   value: _statuses.contains(order.status.toLowerCase())
                       ? order.status.toLowerCase()
                       : 'pending',
@@ -115,21 +117,39 @@ class AdminOrdersScreen extends StatelessWidget {
                           .updateOrderStatus(order.id, value);
                     }
                   },
+              );
+              final riderButton = OutlinedButton.icon(
+                onPressed: () =>
+                    _showRiderDialog(context, order),
+                icon: const Icon(Icons.location_on, size: 18),
+                label: Text(
+                  order.hasRiderLocation
+                      ? 'Update rider'
+                      : 'Set rider',
+                  style: GoogleFonts.poppins(fontSize: 13),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () =>
-                      _showRiderDialog(context, order),
-                  icon: const Icon(Icons.location_on, size: 18),
-                  label: Text(
-                    order.hasRiderLocation ? 'Update rider' : 'Set rider',
-                    style: GoogleFonts.poppins(fontSize: 13),
-                  ),
-                ),
-              ),
-            ],
+              );
+              if (narrow) {
+                return Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.stretch,
+                  children: [
+                    dropdown,
+                    const SizedBox(height: 8),
+                    riderButton,
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(child: dropdown),
+                  const SizedBox(width: 8),
+                  Expanded(child: riderButton),
+                ],
+              );
+            },
           ),
           if (order.hasRiderLocation)
             Padding(

@@ -289,12 +289,17 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
                 ),
               ],
             ),
+            // Scrollable bottom sheet: short/landscape screens
+            // never overflow; map keeps at least some height via
+            // Flexible below (Expanded map + shrinkable sheet).
             child: order == null
                 ? const Center(child: CircularProgressIndicator())
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+                : SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                       Row(
                         children: [
                           Expanded(
@@ -317,13 +322,17 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
                             color: Colors.deepOrange,
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            _loadingRoute
-                                ? 'Loading route...'
-                                : _etaText(order),
-                            style: GoogleFonts.poppins(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
+                          Flexible(
+                            child: Text(
+                              _loadingRoute
+                                  ? 'Loading route...'
+                                  : _etaText(order),
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -340,7 +349,8 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
                           ),
                         ),
                       ],
-                    ],
+                      ],
+                    ),
                   ),
           ),
         ],
@@ -399,37 +409,46 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
         }
         final idx = i ~/ 2;
         final done = idx <= current;
-        return Column(
-          children: [
-            Container(
-              width: 26,
-              height: 26,
-              decoration: BoxDecoration(
-                color: done ? Colors.deepOrange : Colors.grey.shade300,
-                shape: BoxShape.circle,
+        // Flexible + FittedBox so the 4 steps never overflow
+        // narrow phones: labels shrink instead of striping yellow.
+        return Flexible(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: done ? Colors.deepOrange : Colors.grey.shade300,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  idx == 0
+                      ? Icons.receipt
+                      : idx == 1
+                          ? Icons.restaurant
+                          : idx == 2
+                              ? Icons.delivery_dining
+                              : Icons.check,
+                  size: 14,
+                  color: Colors.white,
+                ),
               ),
-              child: Icon(
-                idx == 0
-                    ? Icons.receipt
-                    : idx == 1
-                        ? Icons.restaurant
-                        : idx == 2
-                            ? Icons.delivery_dining
-                            : Icons.check,
-                size: 14,
-                color: Colors.white,
+              const SizedBox(height: 4),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  steps[idx],
+                  style: GoogleFonts.poppins(
+                    fontSize: 9,
+                    color: done ? Colors.deepOrange : Colors.grey,
+                    fontWeight:
+                        done ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              steps[idx],
-              style: GoogleFonts.poppins(
-                fontSize: 9,
-                color: done ? Colors.deepOrange : Colors.grey,
-                fontWeight: done ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-          ],
+            ],
+          ),
         );
       }),
     );

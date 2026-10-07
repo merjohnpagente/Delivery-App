@@ -82,8 +82,11 @@ class CartScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Column(
-                  children: [
+                // Scrollable so short/landscape screens never overflow.
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                     _summaryRow(
                       'Subtotal',
                       '\$${cart.totalPrice.toStringAsFixed(2)}',
@@ -122,10 +125,13 @@ class CartScreen extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

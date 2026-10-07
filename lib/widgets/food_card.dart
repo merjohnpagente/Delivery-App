@@ -71,11 +71,15 @@ class FoodCard extends StatelessWidget {
                         style: GoogleFonts.poppins(fontSize: 12),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        '• ${food.deliveryTime}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 11,
-                          color: Colors.grey,
+                      Flexible(
+                        child: Text(
+                          '• ${food.deliveryTime}',
+                          style: GoogleFonts.poppins(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],

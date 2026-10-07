@@ -6,6 +6,7 @@ import '../models/order.dart';
 import '../providers/auth_provider.dart';
 import '../services/firestore_service.dart';
 import '../services/location_service.dart';
+import '../theme/responsive.dart';
 import '../widgets/food_image.dart';
 import 'orders_screen.dart';
 
@@ -123,14 +124,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _sectionTitle('Order Summary'),
+      body: Responsive.centered(
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _sectionTitle('Order Summary'),
               const SizedBox(height: 12),
               ...cart.items.map(
                 (item) => Container(
@@ -272,7 +274,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-            ],
+              ],
+            ),
           ),
         ),
       ),
