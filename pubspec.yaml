@@ -1,0 +1,53 @@
+name: bings
+description: Bings - Food Delivery App UI in Flutter.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  provider: ^6.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/about.png
+    - assets/images/avatar.jpg
+    - assets/images/biryani.png
+    - assets/images/bitcoin-logo.png
+    - assets/images/burger.png
+    - assets/images/cover-image.png
+    - assets/images/cryptocurrency.png
+    - assets/images/drink.png
+    - assets/images/gift.png
+    - assets/images/idea.png
+    - assets/images/job.png
+    - assets/images/letter-l.png
+    - assets/images/mcqs.png
+    - assets/images/notification.png
+    - assets/images/paragraph.png
+    - assets/images/pastpapers.png
+    - assets/images/pdf.png
+    - assets/images/pizza.png
+    - assets/images/Product 1.png
+    - assets/images/Product 2.png
+    - assets/images/Product 3.png
+    - assets/images/Product 4.png
+    - assets/images/purse.png
+    - assets/images/quiz.png
+    - assets/images/ripple.png
+    - assets/images/salan.png
+    - assets/images/teamwork.png
+    - assets/images/thumb-up.png
+    - assets/images/woman.png
