@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'auth/login_screen.dart';
+import 'edit_profile_screen.dart';
 import 'orders_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -171,16 +172,40 @@ class ProfileScreen extends StatelessWidget {
               },
             ),
             _menuTile(
+              icon: Icons.edit_outlined,
+              title: 'Edit Profile',
+              subtitle: 'Name, phone, address',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const EditProfileScreen(),
+                  ),
+                );
+              },
+            ),
+            _menuTile(
               icon: Icons.location_on_outlined,
               title: 'Delivery Address',
               subtitle: profile?.address ?? 'Not set',
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const EditProfileScreen(),
+                  ),
+                );
+              },
             ),
             _menuTile(
               icon: Icons.phone_outlined,
               title: 'Phone',
               subtitle: profile?.phone ?? 'Not set',
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const EditProfileScreen(),
+                  ),
+                );
+              },
             ),
             _menuTile(
               icon: Icons.card_giftcard_outlined,

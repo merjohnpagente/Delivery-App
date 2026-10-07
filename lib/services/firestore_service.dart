@@ -67,15 +67,22 @@ class FirestoreService {
   }
 
   /// Live list of one user's orders, newest first.
+  ///
+  /// Sorted client-side on purpose: a server-side orderBy would
+  /// require a Firestore composite index, and orders would fail
+  /// to load ("Failed to load orders") until the index exists.
   Stream<List<Order>> userOrdersStream(String userId) {
     return _db
         .collection('orders')
         .where('userId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((doc) => Order.fromMap(doc.id, doc.data()))
-            .toList());
+        .map((snap) {
+      final orders = snap.docs
+          .map((doc) => Order.fromMap(doc.id, doc.data()))
+          .toList();
+      orders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return orders;
+    });
   }
 
   /// Live stream of a single order (for the tracking screen).

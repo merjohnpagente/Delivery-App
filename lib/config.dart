@@ -1,13 +1,14 @@
 /// App-wide configuration.
 ///
-/// Replace [googleMapsApiKey] with a key that has
-/// "Maps SDK for Android" + "Directions API" enabled,
-/// restricted to the app package (com.bings.app).
-/// The same key must also be set in
-/// android/app/src/main/AndroidManifest.xml
-/// (com.google.android.geo.API_KEY).
+/// Maps are 100% FREE: OpenStreetMap tiles + OSRM routing.
+/// No API key, no billing, no account needed.
 class AppConfig {
-  static const String googleMapsApiKey = 'YOUR_MAPS_API_KEY';
+  /// Free OpenStreetMap tile server.
+  static const String osmTileUrl =
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+  /// Free OSRM demo routing server (driving routes, no key).
+  static const String osrmHost = 'router.project-osrm.org';
 
   // Default store location (Cebu City). Change to your store.
   static const double storeLat = 10.3157;

@@ -28,11 +28,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <!-- Google Maps API key: replace YOUR_MAPS_API_KEY with a key that
-             has "Maps SDK for Android" enabled, restricted to com.bings.app -->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_MAPS_API_KEY" />
     </application>
     <queries>
         <provider android:authorities="com.android.settings.files" />

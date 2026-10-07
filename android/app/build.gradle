@@ -27,6 +27,19 @@ android {
         versionName = "1.0.0"
     }
 
+    // Fixed debug keystore committed in the repo so every CI build
+    // signs with the same SHA-1 (required for Google Sign-In).
+    // Debug key only - never use for release signing.
+    signingConfigs {
+        debug {
+            storeFile file("debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+            storeType "pkcs12"
+        }
+    }
+
     buildTypes {
         release {
             signingConfig = signingConfigs.debug

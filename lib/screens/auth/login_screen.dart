@@ -21,9 +21,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  late final VoidCallback _authListener;
+
+  @override
+  void initState() {
+    super.initState();
+    // If a session restores late (slow network) while this screen
+    // is showing, route forward instead of stranding the user here.
+    _authListener = () {
+      if (!mounted) return;
+      final loggedIn =
+          context.read<AuthProvider>().isLoggedIn;
+      final isCurrent =
+          ModalRoute.of(context)?.isCurrent ?? false;
+      if (loggedIn && isCurrent) _goHome();
+    };
+    context.read<AuthProvider>().addListener(_authListener);
+  }
 
   @override
   void dispose() {
+    context.read<AuthProvider>().removeListener(_authListener);
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();

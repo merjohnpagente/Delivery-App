@@ -48,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
           food.name.toLowerCase().contains(_searchQuery.toLowerCase());
     }).toList();
 
-    return Scaffold(
+    final homeTab = Scaffold(
       backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -254,62 +254,88 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _navIndex,
-        onTap: (index) => setState(() => _navIndex = index),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.deepOrange,
-        unselectedItemColor: Colors.grey,
-        selectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
-        unselectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            activeIcon: Icon(Icons.receipt_long),
-            label: 'Orders',
-          ),
-          BottomNavigationBarItem(
-            icon: Stack(
-              children: [
-                const Icon(Icons.shopping_cart_outlined),
-                Consumer<CartProvider>(
-                  builder: (_, cart, __) => cart.itemCount > 0
-                      ? Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: const BoxDecoration(
-                              color: Colors.deepOrange,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Text(
-                              '${cart.itemCount}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 8,
-                              ),
+    );
+    // IndexedStack keeps every tab alive (scroll position + state),
+    // one shared nav bar, and back button returns to Home.
+    return PopScope(
+      canPop: _navIndex == 0,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _navIndex != 0) {
+          setState(() => _navIndex = 0);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade50,
+        body: IndexedStack(
+          index: _navIndex,
+          children: [
+            homeTab,
+            const OrdersScreen(showAppBar: true),
+            const CartScreen(showAppBar: true),
+            const ProfileScreen(showAppBar: true),
+          ],
+        ),
+        bottomNavigationBar: _bottomNav(),
+      ),
+    );
+  }
+
+  Widget _bottomNav() {
+    return BottomNavigationBar(
+      currentIndex: _navIndex,
+      onTap: (index) => setState(() => _navIndex = index),
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: Colors.deepOrange,
+      unselectedItemColor: Colors.grey,
+      selectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
+      unselectedLabelStyle: GoogleFonts.poppins(fontSize: 12),
+      items: [
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.home_outlined),
+          activeIcon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.receipt_long_outlined),
+          activeIcon: Icon(Icons.receipt_long),
+          label: 'Orders',
+        ),
+        BottomNavigationBarItem(
+          icon: Stack(
+            children: [
+              const Icon(Icons.shopping_cart_outlined),
+              Consumer<CartProvider>(
+                builder: (_, cart, __) => cart.itemCount > 0
+                    ? Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: const BoxDecoration(
+                            color: Colors.deepOrange,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${cart.itemCount}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
                             ),
                           ),
-                        )
-                      : const SizedBox.shrink(),
-                ),
-              ],
-            ),
-            label: 'Cart',
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_outlined),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+          label: 'Cart',
+        ),
+        const BottomNavigationBarItem(
+          icon: Icon(Icons.person_outlined),
+          activeIcon: Icon(Icons.person),
+          label: 'Profile',
+        ),
+      ],
     );
   }
 

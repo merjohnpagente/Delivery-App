@@ -12,22 +12,60 @@ class AdminFoodsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foods = context.watch<FoodProvider>().foods;
+    final foodProvider = context.watch<FoodProvider>();
+    final foods = foodProvider.foods;
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: foods.isEmpty
-          ? Center(
-              child: Text(
-                'No foods yet.',
-                style: GoogleFonts.poppins(color: Colors.grey),
+      body: Column(
+        children: [
+          // While showing bundled sample data (Firestore menu empty
+          // or unreachable), admin edits would target fake IDs, so
+          // explain instead of failing silently.
+          if (foodProvider.usingFallback)
+            Container(
+              margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.orange.shade200),
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: foods.length,
-              itemBuilder: (context, i) =>
-                  _foodTile(context, foods[i]),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.info_outlined,
+                    color: Colors.deepOrange,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Showing sample menu. Add foods to the Firestore '
+                      'collection to manage the live menu.',
+                      style: GoogleFonts.poppins(fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
             ),
+          Expanded(
+            child: foods.isEmpty
+                ? Center(
+                    child: Text(
+                      'No foods yet.',
+                      style:
+                          GoogleFonts.poppins(color: Colors.grey),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: foods.length,
+                    itemBuilder: (context, i) =>
+                        _foodTile(context, foods[i]),
+                  ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
         onPressed: () => _showFoodDialog(context, null),

@@ -2,15 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:latlong2/latlong.dart';
 import '../config.dart';
 import '../models/order.dart';
 import '../services/firestore_service.dart';
 
-/// Live tracking screen: shows the rider marker moving on the map,
-/// the customer location, the route between them, and the order status.
+/// Live tracking screen on FREE OpenStreetMap tiles (no API key):
+/// rider marker (live), customer marker, store marker,
+/// driving route via free OSRM, ETA and status timeline.
 class TrackOrderScreen extends StatefulWidget {
   final String orderId;
 
@@ -21,12 +23,12 @@ class TrackOrderScreen extends StatefulWidget {
 }
 
 class _TrackOrderScreenState extends State<TrackOrderScreen> {
-  final Completer<GoogleMapController> _mapController = Completer();
+  final MapController _mapController = MapController();
   StreamSubscription<Order?>? _orderSub;
   Order? _order;
-  final Set<Marker> _markers = {};
-  final Set<Polyline> _polylines = {};
+  List<LatLng> _routePoints = [];
   bool _loadingRoute = false;
+  bool _mapReady = false;
 
   @override
   void initState() {
@@ -39,154 +41,70 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
   @override
   void dispose() {
     _orderSub?.cancel();
+    _mapController.dispose();
     super.dispose();
   }
 
   Future<void> _onOrderUpdate(Order? order) async {
     if (order == null || !mounted) return;
+    final moved = _order == null ||
+        _order!.riderLat != order.riderLat ||
+        _order!.riderLng != order.riderLng;
     setState(() => _order = order);
-    _updateMarkers(order);
-    await _updateRoute(order);
-    _fitCamera(order);
-  }
-
-  void _updateMarkers(Order order) {
-    final markers = <Marker>{};
-    // Store marker.
-    markers.add(
-      const Marker(
-        markerId: MarkerId('store'),
-        position: LatLng(AppConfig.storeLat, AppConfig.storeLng),
-        infoWindow: InfoWindow(title: AppConfig.storeName),
-      ),
-    );
-    // Customer marker.
-    if (order.hasCustomerLocation) {
-      markers.add(
-        Marker(
-          markerId: const MarkerId('customer'),
-          position: LatLng(order.customerLat!, order.customerLng!),
-          infoWindow: const InfoWindow(title: 'Delivery address'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueGreen),
-        ),
-      );
+    if (moved) {
+      await _updateRoute(order);
+      _moveCamera(order);
     }
-    // Rider marker (live).
-    if (order.hasRiderLocation) {
-      markers.add(
-        Marker(
-          markerId: const MarkerId('rider'),
-          position: LatLng(order.riderLat!, order.riderLng!),
-          infoWindow: const InfoWindow(title: 'Your rider'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueOrange),
-        ),
-      );
-    }
-    setState(() {
-      _markers
-        ..clear()
-        ..addAll(markers);
-    });
   }
 
   Future<void> _updateRoute(Order order) async {
     if (!order.hasRiderLocation || !order.hasCustomerLocation) {
-      setState(() => _polylines.clear());
+      if (mounted) setState(() => _routePoints = []);
       return;
     }
-    final origin = LatLng(order.riderLat!, order.riderLng!);
-    final dest = LatLng(order.customerLat!, order.customerLng!);
+    final origin =
+        LatLng(order.riderLat!, order.riderLng!);
+    final dest =
+        LatLng(order.customerLat!, order.customerLng!);
     List<LatLng> points = [origin, dest]; // straight-line fallback
-    if (AppConfig.googleMapsApiKey != 'YOUR_MAPS_API_KEY') {
-      try {
-        setState(() => _loadingRoute = true);
-        final fetched = await _fetchRoute(origin, dest);
-        if (fetched.isNotEmpty) points = fetched;
-      } catch (_) {
-        // Keep straight-line fallback.
-      } finally {
-        if (mounted) setState(() => _loadingRoute = false);
-      }
+    try {
+      if (mounted) setState(() => _loadingRoute = true);
+      final fetched = await _fetchRoute(origin, dest);
+      if (fetched.isNotEmpty) points = fetched;
+    } catch (_) {
+      // Keep straight-line fallback.
+    } finally {
+      if (mounted) setState(() => _loadingRoute = false);
     }
     if (!mounted) return;
-    setState(() {
-      _polylines
-        ..clear()
-        ..add(
-          Polyline(
-            polylineId: const PolylineId('route'),
-            points: points,
-            color: Colors.deepOrange,
-            width: 5,
-          ),
-        );
-    });
+    setState(() => _routePoints = points);
   }
 
-  Future<void> _fitCamera(Order order) async {
-    if (!_mapController.isCompleted) return;
-    final controller = await _mapController.future;
-    final points = <LatLng>[
-      const LatLng(AppConfig.storeLat, AppConfig.storeLng),
-      if (order.hasCustomerLocation)
-        LatLng(order.customerLat!, order.customerLng!),
-      if (order.hasRiderLocation)
-        LatLng(order.riderLat!, order.riderLng!),
-    ];
-    if (points.length == 1) {
-      controller.animateCamera(CameraUpdate.newLatLngZoom(points.first, 15));
-      return;
-    }
-    double minLat = points.first.latitude;
-    double maxLat = points.first.latitude;
-    double minLng = points.first.longitude;
-    double maxLng = points.first.longitude;
-    for (final p in points) {
-      minLat = min(minLat, p.latitude);
-      maxLat = max(maxLat, p.latitude);
-      minLng = min(minLng, p.longitude);
-      maxLng = max(maxLng, p.longitude);
-    }
-    controller.animateCamera(
-      CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-          southwest: LatLng(minLat, minLng),
-          northeast: LatLng(maxLat, maxLng),
-        ),
-        80,
-      ),
-    );
-  }
-
-  /// Fetch driving route via the Directions API and decode its polyline.
-  /// Returns empty list on any failure (caller keeps straight-line fallback).
-  Future<List<LatLng>> _fetchRoute(LatLng origin, LatLng dest) async {
+  /// Free OSRM routing (no key). Note OSRM uses lng,lat order.
+  /// Returns empty list on any failure.
+  Future<List<LatLng>> _fetchRoute(
+      LatLng origin, LatLng dest) async {
     final uri = Uri.https(
-      'maps.googleapis.com',
-      '/maps/api/directions/json',
-      {
-        'origin': '${origin.latitude},${origin.longitude}',
-        'destination': '${dest.latitude},${dest.longitude}',
-        'mode': 'driving',
-        'key': AppConfig.googleMapsApiKey,
-      },
+      'router.project-osrm.org',
+      '/route/v1/driving/'
+      '${origin.longitude},${origin.latitude};'
+      '${dest.longitude},${dest.latitude}',
+      {'overview': 'full', 'geometries': 'polyline'},
     );
     final response =
         await http.get(uri).timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) return [];
     final json =
         jsonDecode(response.body) as Map<String, dynamic>;
-    if (json['status'] != 'OK') return [];
+    if (json['code'] != 'Ok') return [];
     final routes = json['routes'] as List<dynamic>;
     if (routes.isEmpty) return [];
-    final encoded = routes.first['overview_polyline']?['points'];
+    final encoded = routes.first['geometry'];
     if (encoded is! String || encoded.isEmpty) return [];
     return _decodePolyline(encoded);
   }
 
-  /// Decode a Google encoded polyline into coordinates.
+  /// Decode a Google/OSRM encoded polyline into coordinates.
   List<LatLng> _decodePolyline(String encoded) {
     final points = <LatLng>[];
     int index = 0, lat = 0, lng = 0;
@@ -213,8 +131,53 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
     return points;
   }
 
-  /// Rough ETA from rider to customer at average rider speed.
+  /// Center the camera on all known points with a zoom
+  /// picked from the spread (no overflow, no plugin guessing).
+  void _moveCamera(Order order) {
+    if (!_mapReady) return;
+    final points = <LatLng>[
+      const LatLng(AppConfig.storeLat, AppConfig.storeLng),
+      if (order.hasCustomerLocation)
+        LatLng(order.customerLat!, order.customerLng!),
+      if (order.hasRiderLocation)
+        LatLng(order.riderLat!, order.riderLng!),
+    ];
+    double minLat = points.first.latitude;
+    double maxLat = points.first.latitude;
+    double minLng = points.first.longitude;
+    double maxLng = points.first.longitude;
+    for (final p in points) {
+      minLat = min(minLat, p.latitude);
+      maxLat = max(maxLat, p.latitude);
+      minLng = min(minLng, p.longitude);
+      maxLng = max(maxLng, p.longitude);
+    }
+    final center =
+        LatLng((minLat + maxLat) / 2, (minLng + maxLng) / 2);
+    final span = max(maxLat - minLat, maxLng - minLng);
+    double zoom;
+    if (span > 0.5) {
+      zoom = 10;
+    } else if (span > 0.2) {
+      zoom = 12;
+    } else if (span > 0.05) {
+      zoom = 14;
+    } else {
+      zoom = 15.5;
+    }
+    _mapController.move(center, zoom);
+  }
+
+  /// ETA text: delivered/cancelled get a final message,
+  /// otherwise haversine distance at average rider speed.
   String _etaText(Order order) {
+    final status = order.status.toLowerCase();
+    if (status == 'delivered' || status == 'completed') {
+      return 'Delivered! Enjoy your meal 🎉';
+    }
+    if (status == 'cancelled') {
+      return 'This order was cancelled.';
+    }
     if (!order.hasRiderLocation || !order.hasCustomerLocation) {
       return 'Waiting for rider...';
     }
@@ -227,12 +190,65 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
             sin(dLng / 2) *
             sin(dLng / 2);
     final distKm = 2 * earthKm * asin(sqrt(a));
-    final mins = (distKm / AppConfig.riderSpeedKmh * 60).ceil();
+    final mins =
+        (distKm / AppConfig.riderSpeedKmh * 60).ceil();
     if (mins < 1) return 'Arriving now!';
     return '~$mins min away (${distKm.toStringAsFixed(1)} km)';
   }
 
   double _rad(double deg) => deg * pi / 180;
+
+  List<Marker> _markers(Order order) {
+    return [
+      const Marker(
+        point: LatLng(AppConfig.storeLat, AppConfig.storeLng),
+        width: 40,
+        height: 40,
+        child: Icon(
+          Icons.store,
+          color: Colors.deepOrange,
+          size: 32,
+        ),
+      ),
+      if (order.hasCustomerLocation)
+        Marker(
+          point: LatLng(
+              order.customerLat!, order.customerLng!),
+          width: 40,
+          height: 40,
+          child: const Icon(
+            Icons.location_on,
+            color: Colors.green,
+            size: 36,
+          ),
+        ),
+      if (order.hasRiderLocation)
+        Marker(
+          point:
+              LatLng(order.riderLat!, order.riderLng!),
+          width: 44,
+          height: 44,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.deepOrange,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 3),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  blurRadius: 6,
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.delivery_dining,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+        ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -249,28 +265,43 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon:
+              const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       body: Column(
         children: [
           Expanded(
-            child: GoogleMap(
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(AppConfig.storeLat, AppConfig.storeLng),
-                zoom: 14,
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: const LatLng(
+                    AppConfig.storeLat, AppConfig.storeLng),
+                initialZoom: 14,
+                onMapReady: () {
+                  _mapReady = true;
+                  if (order != null) _moveCamera(order);
+                },
               ),
-              markers: _markers,
-              polylines: _polylines,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              onMapCreated: (controller) {
-                if (!_mapController.isCompleted) {
-                  _mapController.complete(controller);
-                }
-                if (order != null) _fitCamera(order);
-              },
+              children: [
+                TileLayer(
+                  urlTemplate: AppConfig.osmTileUrl,
+                  userAgentPackageName: 'com.bings.app',
+                ),
+                if (_routePoints.length > 1)
+                  PolylineLayer(
+                    polylines: [
+                      Polyline(
+                        points: _routePoints,
+                        color: Colors.deepOrange,
+                        strokeWidth: 5,
+                      ),
+                    ],
+                  ),
+                if (order != null)
+                  MarkerLayer(markers: _markers(order)),
+              ],
             ),
           ),
           Container(
@@ -290,65 +321,82 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
               ],
             ),
             // Scrollable bottom sheet: short/landscape screens
-            // never overflow; map keeps at least some height via
-            // Flexible below (Expanded map + shrinkable sheet).
+            // never overflow.
             child: order == null
-                ? const Center(child: CircularProgressIndicator())
+                ? const Center(
+                    child: CircularProgressIndicator())
                 : SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment:
                           CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Order #${order.id.length > 6 ? order.id.substring(0, 6).toUpperCase() : order.id.toUpperCase()}',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 16,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Order #${order.id.length > 6 ? order.id.substring(0, 6).toUpperCase() : order.id.toUpperCase()}',
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
-                          ),
-                          _statusBadge(order.status),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.delivery_dining,
-                            color: Colors.deepOrange,
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              _loadingRoute
-                                  ? 'Loading route...'
-                                  : _etaText(order),
-                              style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      _statusTimeline(order.status),
-                      if (!order.hasRiderLocation) ...[
+                            _statusBadge(order.status),
+                          ],
+                        ),
                         const SizedBox(height: 8),
-                        Text(
-                          'Rider location not yet available. The store will assign your rider soon.',
-                          style: GoogleFonts.poppins(
-                            fontSize: 12,
-                            color: Colors.grey,
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.delivery_dining,
+                              color: Colors.deepOrange,
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                _loadingRoute
+                                    ? 'Loading route...'
+                                    : _etaText(order),
+                                style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        _statusTimeline(order.status),
+                        if (!order.hasRiderLocation &&
+                            order.status.toLowerCase() !=
+                                'delivered' &&
+                            order.status.toLowerCase() !=
+                                'cancelled') ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            'Rider location not yet available. The store will assign your rider soon.',
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 8),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'Map © OpenStreetMap contributors',
+                            style: GoogleFonts.poppins(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
                           ),
                         ),
-                      ],
                       ],
                     ),
                   ),
@@ -376,7 +424,8 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
         color = Colors.orange;
     }
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      padding:
+          const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: color.withOpacity(0.12),
         borderRadius: BorderRadius.circular(8),
@@ -388,6 +437,8 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
           fontWeight: FontWeight.w600,
           color: color,
         ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -403,7 +454,9 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
           return Expanded(
             child: Container(
               height: 3,
-              color: done ? Colors.deepOrange : Colors.grey.shade300,
+              color: done
+                  ? Colors.deepOrange
+                  : Colors.grey.shade300,
             ),
           );
         }
@@ -419,7 +472,9 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
                 width: 26,
                 height: 26,
                 decoration: BoxDecoration(
-                  color: done ? Colors.deepOrange : Colors.grey.shade300,
+                  color: done
+                      ? Colors.deepOrange
+                      : Colors.grey.shade300,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -441,9 +496,11 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
                   steps[idx],
                   style: GoogleFonts.poppins(
                     fontSize: 9,
-                    color: done ? Colors.deepOrange : Colors.grey,
-                    fontWeight:
-                        done ? FontWeight.w600 : FontWeight.normal,
+                    color:
+                        done ? Colors.deepOrange : Colors.grey,
+                    fontWeight: done
+                        ? FontWeight.w600
+                        : FontWeight.normal,
                   ),
                 ),
               ),

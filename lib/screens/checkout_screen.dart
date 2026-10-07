@@ -62,7 +62,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     setState(() => _placingOrder = true);
     try {
       // Capture customer GPS location for live delivery tracking.
-      final position = await LocationService().currentPosition();
+      // Non-blocking: never delay the order more than ~2.5s for GPS.
+      final position = await LocationService()
+          .currentPosition()
+          .timeout(
+            const Duration(seconds: 3),
+            onTimeout: () => null,
+          )
+          .catchError((_) => null);
       final order = Order(
         id: '',
         userId: auth.firebaseUser!.uid,

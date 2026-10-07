@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
@@ -11,6 +12,7 @@ class AuthProvider extends ChangeNotifier {
   AppUser? _profile;
   bool _isLoading = false;
   String? _error;
+  StreamSubscription<AppUser?>? _profileSub;
 
   User? get firebaseUser => _firebaseUser;
   AppUser? get profile => _profile;
@@ -27,9 +29,14 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _onAuthChanged(User? user) async {
+    // Cancel any previous profile subscription first (avoids leaks
+    // and duplicate rebuilds on logout/login cycles).
+    await _profileSub?.cancel();
+    _profileSub = null;
     _firebaseUser = user;
     if (user != null) {
-      _authService.userProfileStream(user.uid).listen((profile) {
+      _profileSub =
+          _authService.userProfileStream(user.uid).listen((profile) {
         _profile = profile;
         notifyListeners();
       });
@@ -37,6 +44,12 @@ class AuthProvider extends ChangeNotifier {
       _profile = null;
     }
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _profileSub?.cancel();
+    super.dispose();
   }
 
   Future<bool> register({
