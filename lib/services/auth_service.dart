@@ -7,7 +7,14 @@ import '../models/user_model.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  bool _googleInitialized = false;
+
+  /// google_sign_in v7 uses a singleton that must be initialized once.
+  Future<void> _ensureGoogleInitialized() async {
+    if (_googleInitialized) return;
+    await GoogleSignIn.instance.initialize();
+    _googleInitialized = true;
+  }
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
@@ -47,17 +54,26 @@ class AuthService {
 
   /// Sign in with Google. Creates the user document on first login.
   Future<UserCredential> signInWithGoogle() async {
-    final googleUser = await _googleSignIn.signIn();
-    if (googleUser == null) {
+    await _ensureGoogleInitialized();
+    late final GoogleSignInAccount googleUser;
+    try {
+      googleUser = await GoogleSignIn.instance.authenticate();
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        throw FirebaseAuthException(
+          code: 'cancelled',
+          message: 'Google sign-in was cancelled.',
+        );
+      }
       throw FirebaseAuthException(
-        code: 'cancelled',
-        message: 'Google sign-in was cancelled.',
+        code: 'google-sign-in-failed',
+        message: e.description ?? 'Google sign-in failed.',
       );
     }
-    final googleAuth = await googleUser.authentication;
+    // v7 exposes only the ID token here, which is sufficient
+    // for Firebase credential sign-in.
     final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
+      idToken: googleUser.authentication.idToken,
     );
     final userCredential = await _auth.signInWithCredential(credential);
     final doc =
@@ -82,7 +98,11 @@ class AuthService {
 
   /// Sign out from Firebase + Google.
   Future<void> logout() async {
-    await _googleSignIn.signOut();
+    try {
+      await GoogleSignIn.instance.signOut();
+    } catch (_) {
+      // Ignore when Google was never initialized/signed in.
+    }
     await _auth.signOut();
   }
 
