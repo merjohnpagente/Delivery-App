@@ -4,7 +4,12 @@ body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, san
 .hero { display: flex; gap: 24px; align-items: center; justify-content: space-between; padding: 48px 24px; background: linear-gradient(135deg, #ff5722, #ff8a50); color: #fff; flex-wrap: wrap; }
 .hero-inner { max-width: 520px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: 2px; }
-.logo { font-size: 32px; }
+.logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,.2); }
+.logo svg { width: 26px; height: 26px; }
+.icon { width: 18px; height: 18px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; }
+.feat { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.feat svg { width: 20px; height: 20px; color: var(--brand); }
 .brand-name { font-size: 22px; }
 .hero h1 { font-size: clamp(32px, 5vw, 52px); margin: 12px 0 8px; }
 .sub { opacity: .95; font-size: 18px; }
@@ -23,3 +28,20 @@ body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, san
 .how { background: var(--card); border-radius: 16px; padding: 20px; margin-top: 20px; }
 .tiny { color: var(--muted); font-size: 13px; }
 footer { text-align: center; color: var(--muted); font-size: 13px; padding: 24px; }
+html { scroll-behavior: smooth; }
+.topnav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+.nav-brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; color: var(--dark); text-decoration: none; }
+.logo.sm { width: 32px; height: 32px; border-radius: 9px; background: var(--brand); color: #fff; }
+.logo.sm svg { width: 20px; height: 20px; }
+.nav-links { display: flex; gap: 16px; }
+.nav-links a { display: flex; align-items: center; gap: 6px; color: var(--dark); text-decoration: none; font-weight: 600; font-size: 15px; }
+.nav-links a svg { width: 17px; height: 17px; color: var(--brand); }
+.panel { background: var(--card); border-radius: 16px; padding: 20px; margin-top: 20px; scroll-margin-top: 70px; }
+.panel h2 { display: flex; align-items: center; gap: 8px; margin-top: 0; }
+.panel h2 svg { width: 22px; height: 22px; color: var(--brand); }
+.ticks { padding-left: 20px; }
+.ticks li { margin: 6px 0; }
+.cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.btn.dark { background: var(--dark); color: #fff; }
+.btn.light { border: 2px solid var(--brand); color: var(--brand); }
+.flinks a { color: var(--brand); text-decoration: none; font-weight: 600; }
